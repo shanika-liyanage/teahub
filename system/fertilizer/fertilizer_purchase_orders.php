@@ -141,6 +141,7 @@ $conn = dbConnect();
                             <td><input type="number" name="quantity[]" class="form-control"></td>
                             <td><input type="text" name="price[]" class="form-control"></td>
                             <td><button type="button" onclick="removeRow(this)" class="btn btn-success">X</button></td>
+                        <button>add</button>
                         </tr>
                     </tbody>
 

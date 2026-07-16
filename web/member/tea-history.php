@@ -53,7 +53,7 @@ $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="container">
 
     <h2 class="mb-4 text-center">
-        My Tea Supply History
+        My Tea Supply Historyss
     </h2>
 
     <!-- FILTER -->

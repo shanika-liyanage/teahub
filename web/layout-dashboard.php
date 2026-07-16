@@ -31,7 +31,7 @@
     <link href="<?= WEB_URL ?>assets/css/style.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="page-header">
     <!-- Spinner Start -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
@@ -51,10 +51,10 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto">
-                        
 
-                        <a href="logout.php" class="nav-item nav-link">View Profile</a>
-                        <a href="logout.php" class="nav-item nav-link">Logout</a>
+                        <a href="#" class="nav-item nav-link">Welcome , <?= $_SESSION['last_name'] ?></a>
+                        <a href="<?= WEB_URL ?>member/profile.php" class="nav-item nav-link">View Profile</a>
+                        <a href="<?= WEB_URL ?>member/logout.php" class="nav-item nav-link">Logout</a>
                     </div>
                     <div class="border-start ps-4 d-none d-lg-block">
                         <button type="button" class="btn btn-sm p-0"><i class="fa fa-search"></i></button>
@@ -71,7 +71,7 @@
     <?= $content ?>
 
 
-    
+
 
 
     <!-- Copyright Start -->

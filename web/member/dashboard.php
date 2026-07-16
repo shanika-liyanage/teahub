@@ -2,8 +2,9 @@
 ob_start();
 include '../../init.php'; // Include the initialization file (which includes config.php)
 ?>
-<div class="container-fluid contact py-5 page-header">
-    <div class=" wow fadeInUp" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
+<div class="container-fluid contact py-5 ">
+    <div class=" wow fadeInUp" data-wow-delay="0.1s"
+        style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
         <div class="container">
             <div class="row g-5 mb-5">
 
@@ -37,31 +38,13 @@ include '../../init.php'; // Include the initialization file (which includes con
                     <div class="card" style="width: 18rem;">
                         <img src="<?= WEB_URL ?>assets/img/ordermaterial.png" class="card-img-top" alt="...">
                         <div class="card-body">
-                            <h5 class="card-title">Order Material</h5>
+                            <h5 class="card-title">Order Fertilizer</h5>
 
-                            <a href="#" class="btn btn-primary">View</a>
+                            <a href="<?= WEB_URL ?>member/fertilizer.php" class="btn btn-primary">View</a>
                         </div>
                     </div>
                 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             </div>
-
-
-
         </div>
     </div>
 </div>

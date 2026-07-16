@@ -14,7 +14,9 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Playfair+Display:wght@700;900&display=swap"
+        rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
@@ -29,16 +31,17 @@
 
     <!-- Template Stylesheet -->
     <link href="<?= WEB_URL ?>assets/css/style.css" rel="stylesheet">
+    <link href="<?= WEB_URL ?>assets/css/my_style.css" rel="stylesheet">
 </head>
 
 <body>
     <!-- Spinner Start -->
-    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
     </div>
     <!-- Spinner End -->
 
-    
     <!-- Navbar Start -->
     <div class="container-fluid bg-white sticky-top">
         <div class="container">
@@ -46,17 +49,33 @@
                 <a href="index.html" class="navbar-brand">
                     <img class="img-fluid" src="<?= WEB_URL ?>assets/img/Teahublogo1.png" alt="Logo">
                 </a>
-                <button type="button" class="navbar-toggler ms-auto me-0" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+
+                <button type="button" class="navbar-toggler ms-auto me-0" data-bs-toggle="collapse"
+                    data-bs-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto">
-                        <a href="<?= WEB_URL ?>index.php" class="nav-item nav-link active">Home</a>
-                        <a href="about.php" class="nav-item nav-link">About</a>
-                        <a href="store.html" class="nav-item nav-link">Store</a>
-                        <a href="contact.php" class="nav-item nav-link">Contact</a>
-                     <a href="member/login.php" class="btn btn-dark btn-lg w-100 d-flex align-items-center justify-content-center">Login</a>
-                        
+                        <?php
+                        // gain alredy active file name
+                        $current_page = basename($_SERVER['SCRIPT_NAME']);
+                        ?>
+
+                        <a href="<?= WEB_URL ?>index.php"
+                            class="nav-item nav-link <?= ($current_page == 'index.php') ? 'active' : ''; ?>">Home</a>
+                        <a href="<?= WEB_URL ?>about.php"
+                            class="nav-item nav-link <?= ($current_page == 'about.php') ? 'active' : ''; ?>">About</a>
+                        <a href="<?= WEB_URL ?>contact.php"
+                            class="nav-item nav-link <?= ($current_page == 'contact.php') ? 'active' : ''; ?>">Contact</a>
+                        <?php if (isset($_SESSION['supplier_id'])) { ?>
+                            <a href="<?= WEB_URL ?>member/dashboard.php" class="nav-item nav-link">Dashboard</a>
+                            <a href="<?= WEB_URL ?>member/logout.php" class="nav-item nav-link">Logout</a>
+                        <?php } else { ?>
+                            <a href="<?= WEB_URL ?>member/login.php"
+                                class="btn btn-dark btn-lg w-100 d-flex align-items-center justify-content-center">Login</a>
+                        <?php } ?>
+
                     </div>
                     <div class="border-start ps-4 d-none d-lg-block">
                         <button type="button" class="btn btn-sm p-0"><i class="fa fa-search"></i></button>
@@ -66,25 +85,21 @@
         </div>
     </div>
     <!-- Navbar End -->
-     
-
-
 
     <?= $content ?>
-
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark footer mt-5 py-5 wow fadeIn " data-wow-delay="0.1s">
         <div class="container py-5">
-            <div class="row g-5  justify-content-center" >
+            <div class="row g-5  justify-content-center">
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-primary mb-4">Our Factory</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary me-3"></i>10 Street, Wanduramba, Galle , Sri lanka</p>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary me-3"></i>10 Street, Wanduramba, Galle ,
+                        Sri lanka</p>
                     <p class="mb-2"><i class="fa fa-phone-alt text-primary me-3"></i>+94 91 224 7887</p>
                     <p class="mb-2"><i class="fa fa-envelope text-primary me-3"></i>imbul@gahagoda.com</p>
-                    
                 </div>
-                
+
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-primary mb-4">Opening Hours</h4>
                     <p class="mb-1">Monday - Friday</p>
@@ -94,12 +109,11 @@
                     <p class="mb-1">Sunday</p>
                     <h6 class="text-light">Closed</h6>
                 </div>
-                
+
             </div>
         </div>
     </div>
     <!-- Footer End -->
-
 
     <!-- Copyright Start -->
     <div class="container-fluid copyright py-4">
@@ -110,16 +124,17 @@
                 </div>
                 <div class="col-md-6 text-center text-md-end">
                     <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                    Designed By <a class="fw-medium" href="https://htmlcodex.com">HTML Codex</a> Distributed By <a class="fw-medium" href="https://themewagon.com">ThemeWagon</a>
+                    Designed By <a class="fw-medium" href="https://htmlcodex.com">HTML Codex</a> Distributed By <a
+                        class="fw-medium" href="https://themewagon.com">ThemeWagon</a>
                 </div>
             </div>
         </div>
     </div>
     <!-- Copyright End -->
 
-
     <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i
+            class="bi bi-arrow-up"></i></a>
 
 
     <!-- JavaScript Libraries -->

@@ -183,11 +183,12 @@
       <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-          <div class="image">
-            <img src="<?= SYS_URL ?>assets/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+          
+          <div class="info">
+            <a href="#" class="d-block"><?= $_SESSION['first_name'] ?></a>
           </div>
           <div class="info">
-            <a href="#" class="d-block">Alexander Pierce</a>
+            <a href="#" class="d-block">(<?=  $_SESSION['role_name'] ?>)</a>
           </div>
         </div>
 
@@ -214,7 +215,7 @@
         $user_id = $_SESSION['user_id'];
 
 
-        // 🔹 Get user role
+        //  Get user role
         $stmt = $conn->prepare("SELECT role_id FROM users WHERE id = ?");
         $stmt->execute([$user_id]);
 
@@ -222,7 +223,7 @@
         $role_id = $stmt->fetchColumn();
 
 
-        // 🔹 Load allowed modules for this role
+        //  Load allowed modules for this role
         $sql = "
 SELECT m.*
 FROM modules m
@@ -237,7 +238,7 @@ ORDER BY m.module_index ASC
         $modules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-        // 🔹 Build tree
+        //  Build tree
         $tree = [];
 
 
@@ -283,7 +284,7 @@ ORDER BY m.module_index ASC
                                 }
                             }
                             ?>
-                            <!-- 🔹 MAIN MENU -->
+                            <!--  MAIN MENU -->
                             <li class="nav-item <?= $isParentActive ? 'menu-open' : '' ?>">
 
 
@@ -362,7 +363,7 @@ ORDER BY m.module_index ASC
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1 class="m-0">Dashboard</h1>
+              <h1 class="m-0"></h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">

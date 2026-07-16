@@ -20,6 +20,9 @@ $conn = dbConnect();
             $products = $prd->fetchAll(PDO::FETCH_ASSOC);
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+               
+    
+                
                 extract($_POST);
                 $error = [];
                 if (empty($supplier_id)) {
@@ -50,8 +53,8 @@ $conn = dbConnect();
 
                         // Insert Items
                         $sqlItem = "INSERT INTO fertilizer_purchase_order_items
-                (purchase_order_id, fertilizer_item_id, unit, qty,unit_price)
-                VALUES (:purchase_order_id, :fertilizer_item_id, :unit, :qty, :unit_price)";
+                (purchase_order_id, fertilizer_item_id,  qty,unit_price)
+                VALUES (:purchase_order_id, :fertilizer_item_id,  :qty, :unit_price)";
 
                         $stmtItem = $conn->prepare($sqlItem);
                         
@@ -61,10 +64,11 @@ $conn = dbConnect();
                             if (empty($product_id[$i])) continue;
                             $stmtItem->bindParam(':purchase_order_id', $purchase_id);
                             $stmtItem->bindParam(':fertilizer_item_id', $product_id[$i]);
-                            $stmtItem->bindParam(':unit', $unit[$i]);
+                            
                             $stmtItem->bindParam(':qty', $quantity[$i]);
                             $stmtItem->bindParam(':unit_price', $price[$i]);
                             $stmtItem->execute();
+                          
                         }
 
                         $conn->commit();
@@ -114,9 +118,9 @@ $conn = dbConnect();
                     <thead>
                         <tr>
                             <th>Product</th>
-                            <th>Unit</th>
-                            <th>Qty(bag)</th>
-                            <th>Price Per Bag(Rs)</th>
+                           
+                            <th>Qty(Kg)</th>
+                            <th>Price Per (Kg)</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -131,17 +135,11 @@ $conn = dbConnect();
                                     <?php endforeach; ?>
                                 </select>
                             </td>
-                            <td>
-                                <select name="unit[]" class="form-control">
-                                    <option value="50kg">50Kg</option>
-                                    <option value="25kg">25Kg</option>
-
-                                </select>
-                            </td>
+                            
                             <td><input type="number" name="quantity[]" class="form-control"></td>
                             <td><input type="text" name="price[]" class="form-control"></td>
-                            <td><button type="button" onclick="removeRow(this)" class="btn btn-success">X</button></td>
-                        <button>add</button>
+                            <td><button type="button" onclick="removeRow(this)" class="btn btn-danger">X</button></td>
+                        
                         </tr>
                     </tbody>
 
@@ -192,6 +190,7 @@ $conn = dbConnect();
                     <th>Status</th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
 
 
@@ -201,8 +200,9 @@ $conn = dbConnect();
                         <td><?= $row['supplier'] ?></td>
                         <td><?= $row['order_date'] ?></td>
                         <td><?= $row['status'] ?></td>
-                        <td><a href="view.php?id=<?= $row['id'] ?>" class="btn btn-info btn-sm">View</a></td>
-                        <td><a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a></td>
+                        <td><a href="fertilizer_purchase_orders_view.php?id=<?= $row['id'] ?>" class="btn btn-info btn-sm">View</a></td>
+                        <td><a href="fertilizer_purchase_orders_edit.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a></td>
+                        <td><a href="fertilizer_purchase_orders_delete.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">Delete</a></td>
                     </tr>
                 <?php endforeach; ?>
             </table>

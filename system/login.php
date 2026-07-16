@@ -44,7 +44,7 @@
             $errors['password'] = "Password should not be blank";
           }
           if (empty($errors)) {
-            $sql = "SELECT * FROM users WHERE email=:email";
+            $sql = "SELECT users.*,roles.role_name FROM users JOIN roles ON roles.id=users.role_id WHERE email=:email";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':email', $email);
             $stmt->execute();
@@ -56,6 +56,7 @@
               $_SESSION['first_name'] = $user['first_name'];
               $_SESSION['last_name'] = $user['last_name'];
               $_SESSION['email'] = $user['email'];
+              $_SESSION['role_name'] = $user['role_name'];
 
               header("Location:index.php");
             } else {

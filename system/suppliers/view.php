@@ -26,11 +26,16 @@ if (isset($_POST['id'])) {
                 <div class="col-md-5 text-center">
                     <div class="mb-3">
                         <p><strong>ID View</strong></p>
-                        <img src="<?= WEB_URL ?>assets/img/uploads/<?= $row['picture'] ?>" class="img-fluid mb-3 ">
+
+                        <a href="<?= WEB_URL ?>assets/img/uploads/<?= $row['picture'] ?>" target="_blank">
+                            <img src="<?= WEB_URL ?>assets/img/uploads/<?= $row['picture'] ?>"
+                                class="img-fluid mb-3"
+                                style="border:1px solid #000; height:300px ; width:300px; ">
+                        </a>
                     </div>
                     <div class="mb-3">
                         <p><strong>Bank Photo</strong></p>
-                        <img src="<?= WEB_URL ?>assets/img/uploads/<?= $row['book'] ?>" class="img-fluid" style="border:2px solid #000; height:200px;">
+                        <img src="<?= WEB_URL ?>assets/img/uploads/<?= $row['book'] ?>" class="img-fluid" style="border:1px solid #000; height:300px; width:300px; ">
 
                     </div>
                 </div>
@@ -91,6 +96,12 @@ if (isset($_POST['id'])) {
                         <label>Bank Name</label>
                         <input type="text" class="form-control" value="<?= $row['bank'] ?>" readonly>
                     </div>
+
+                    <div class="mb-3">
+                        <label>Bank Branch</label>
+                        <input type="text" class="form-control" value="<?= $row['branch'] ?>" readonly>
+                    </div>
+
                     <div class="mb-3">
                         <form action="verify.php" method="POST">
                             <input type="hidden" name="id" value="<?= $row['id']; ?>">
@@ -99,7 +110,16 @@ if (isset($_POST['id'])) {
                                 <option value="verified" <?= ($row['verify'] == 'verified') ? 'selected' : '' ?>>Verified</option>
                                 <option value="rejected" <?= ($row['verify'] == 'rejected') ? 'selected' : '' ?>>Rejected</option>
                             </select>
-                            <button type="submit" name="action" value="verify" class="btn btn-success sm mt-2">Save</button>
+                            <div class="mt-3">
+
+
+                                <a href="index.php" class="btn btn-secondary ms-2">
+                                    Back
+                                </a>
+                                <button type="submit" name="action" value="verify" class="btn btn-success">
+                                    Save
+                                </button>
+                            </div>
                         </form>
                     </div>
 

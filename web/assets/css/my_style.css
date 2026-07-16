@@ -1,0 +1,33 @@
+ .green-header {
+        background: #1b5e20 !important; /* Dark Green */
+        color: #fff;
+        border-bottom: none;
+    }
+
+    .green-btn {
+        background-color: #1b5e20;
+        border-color: #1b5e20;
+        color: #fff;
+        font-weight: 500;
+    }
+
+    .green-btn:hover {
+        background-color: #145a18;
+        border-color: #145a18;
+        color: #fff;
+    }
+
+    .green-btn:focus,
+    .green-btn:active {
+        background-color: #145a18 !important;
+        border-color: #145a18 !important;
+        box-shadow: 0 0 0 0.2rem rgba(27, 94, 32, 0.25);
+    }
+
+    .card {
+        border: none;
+    }
+
+    .card-header {
+        border-radius: 0rem 0rem 0 0 !important;
+    }

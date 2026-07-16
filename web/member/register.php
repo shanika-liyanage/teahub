@@ -6,7 +6,7 @@ include '../../init.php'; // Include the initialization file (which includes con
 ?>
 
 <style>
-    .myheading{
+    .myheading {
         font-size: 30px;
         font-weight: bold;
         color: #cbf025;
@@ -17,7 +17,7 @@ include '../../init.php'; // Include the initialization file (which includes con
     <div class="container ">
         <div class="row g-5 justify-content-center">
             <div class="col wow fadeInUp" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
-                <h3 class="mb-3 text-center py-5 myheading" >Register Supplier</h3>
+                <h3 class="mb-3 text-center py-5 myheading">Register Supplier</h3>
 
                 <?php
                 //action eka wenuwt form eke attribute eke
@@ -79,6 +79,20 @@ include '../../init.php'; // Include the initialization file (which includes con
                             }
                         }
                     }
+                    $password = trim($password);
+                    $confirm_password = trim($confirm_password);
+
+                    if (empty($password)) {
+                        $error['password'] = "Password is required";
+                    } elseif (strlen($password) < 8) {
+                        $error['password'] = "Password must contain at least 8 characters";
+                    }
+
+                    if (empty($confirm_password)) {
+                        $error['confirm_password'] = "Confirm Password is required";
+                    } elseif ($password != $confirm_password) {
+                        $error['confirm_password'] = "Passwords do not match";
+                    }
 
                     if (empty($nic)) {
                         $error['nic'] = "nic is required";
@@ -116,6 +130,12 @@ include '../../init.php'; // Include the initialization file (which includes con
                             }
                         }
                     }
+                    if (empty($bank)) {
+                        $error['bank'] = "bank name is required";
+                    }
+                    if (empty($branch)) {
+                        $error['branch'] = "branch name is required";
+                    }
 
                     if (empty($number)) {
                         $error['number'] = "bank account number is required";
@@ -125,9 +145,7 @@ include '../../init.php'; // Include the initialization file (which includes con
                             $error['number'] = "Bank account number must contain only digits";
                         }
                     }
-                    if (empty($bank)) {
-                        $error['bank'] = "bank name is required";
-                    }
+                    
                 }
                 if (empty($error)) {
                     if (!empty($_FILES['book']['name'])) {
@@ -201,7 +219,23 @@ include '../../init.php'; // Include the initialization file (which includes con
 
                     try { //data yana eka db ekt
                         $conn = dbConnect(); //conn ntuw on ekk dnnnth plwn x,y...
-                        $sql = "INSERT INTO suppliers (title,first_name,last_name,address1,address2,area,email,nic,mobile,number,bank,book,picture) VALUES (:title,:first_name,:last_name,:address1,:address2,:area,:email,:nic,:mobile,:number,:bank,:book,:picture)"; //sql query ekk hadnwa
+                        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                        $role_id = 6; // Supplier role id
+
+                        $sqlUser = "INSERT INTO users(first_name,last_name,email,password,role_id) VALUES(:first_name,:last_name,:email,:password,:role_id)";
+
+                        $stmtUser = $conn->prepare($sqlUser);
+
+                        $stmtUser->bindParam(':first_name', $first_name);
+                        $stmtUser->bindParam(':last_name', $last_name);
+                        $stmtUser->bindParam(':email', $email);
+                        $stmtUser->bindParam(':password', $hashed_password);
+                        $stmtUser->bindParam(':role_id', $role_id);
+                        $stmtUser->execute();
+
+                        $user_id = $conn->lastInsertId();
+
+                        $sql = "INSERT INTO suppliers (title,first_name,last_name,address1,address2,area,email,nic,mobile,bank,branch,number,book,picture,user_id) VALUES (:title,:first_name,:last_name,:address1,:address2,:area,:email,:nic,:mobile, :bank,:branch,:number,:book,:picture,:user_id)"; //sql query ekk hadnwa
                         $stmt = $conn->prepare($sql); //statement ekk hadnwa
                         $stmt->bindParam(':title', $title);
                         $stmt->bindParam(':first_name', $first_name);
@@ -213,10 +247,13 @@ include '../../init.php'; // Include the initialization file (which includes con
                         $stmt->bindParam(':email', $email);
                         $stmt->bindParam(':nic', $nic);
                         $stmt->bindParam(':mobile', $mobile);
-                        $stmt->bindParam(':number', $number);
                         $stmt->bindParam(':bank', $bank);
+                        $stmt->bindParam(':branch', $branch);
+                        $stmt->bindParam(':number', $number);
+                        
                         $stmt->bindParam(':book', $file_name_new_book);
                         $stmt->bindParam(':picture', $file_name_new);
+                        $stmt->bindParam(':user_id', $user_id);
                         $stmt->execute();
                         $supplier_id = $conn->lastInsertId(); //auto increment id eka ganna eka
 
@@ -230,377 +267,441 @@ include '../../init.php'; // Include the initialization file (which includes con
 
                 ?>
 
-               
-                    <div class="row justify-content-center">
 
-                        <div class="col">
+                <div class="row justify-content-center">
 
-                            <div class="card shadow-lg border-0 rounded-4">
+                    <div class="col">
 
-                                <!-- Card Header -->
-                                <div class="card-header bg-success text-white text-center py-4 rounded-top-4">
+                        <div class="card shadow-lg border-0 rounded-4">
+
+                            <!-- Card Header -->
+                            <div class="card-header bg-success text-white text-center py-4 rounded-top-4">
+
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="card-body p-4">
+
+                                <form method="post" enctype="multipart/form-data" novalidate>
+
+                                    <div class="row">
+
+                                        <!-- Title -->
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+
+                                                <label for="title" class="form-label">
+                                                    Select Title
+                                                </label>
+
+                                                <select name="title"
+                                                    id="title"
+                                                    class="form-select">
+
+                                                    <option value="">--select--</option>
+
+                                                    <option value="mr"
+                                                        <?= isset($title) && $title == 'mr' ? 'selected' : '' ?>>
+                                                        Mr
+                                                    </option>
+
+                                                    <option value="ms"
+                                                        <?= isset($title) && $title == 'ms' ? 'selected' : '' ?>>
+                                                        Ms
+                                                    </option>
+
+                                                    <option value="mrs"
+                                                        <?= isset($title) && $title == 'mrs' ? 'selected' : '' ?>>
+                                                        Mrs
+                                                    </option>
+
+                                                </select>
+
+                                                <span class="text-danger">
+                                                    <?= @$error['title'] ?>
+                                                </span>
+
+                                            </div>
+                                        </div>
+
+                                        <!-- First Name -->
+                                        <div class="col-md-9">
+                                            <div class="mb-3">
+
+                                                <label for="first_name" class="form-label">
+                                                    First Name
+                                                </label>
+
+                                                <input type="text"
+                                                    class="form-control"
+                                                    name="first_name"
+                                                    id="first_name"
+                                                    value="<?= @$first_name ?>">
+
+                                                <span class="text-danger">
+                                                    <?= @$error['first_name'] ?>
+                                                </span>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Last Name -->
+                                    <div class="mb-3">
+
+                                        <label for="last_name" class="form-label">
+                                            Last Name
+                                        </label>
+
+                                        <input type="text"
+                                            name="last_name"
+                                            id="last_name"
+                                            class="form-control"
+                                            value="<?= @$last_name ?>">
+
+                                        <span class="text-danger">
+                                            <?= @$error['last_name'] ?>
+                                        </span>
+
+                                    </div>
+
+                                    <!-- Address 1 -->
+                                    <div class="mb-3">
+
+                                        <label for="address1" class="form-label">
+                                            Address Line 1
+                                        </label>
+
+                                        <textarea name="address1"
+                                            id="address1"
+                                            class="form-control"
+                                            rows="2"><?= @$address1 ?></textarea>
+
+                                        <span class="text-danger">
+                                            <?= @$error['address1'] ?>
+                                        </span>
+
+                                    </div>
+
+                                    <!-- Address 2 -->
+                                    <div class="mb-3">
+
+                                        <label for="address2" class="form-label">
+                                            Address Line 2
+                                        </label>
+
+                                        <textarea name="address2"
+                                            id="address2"
+                                            class="form-control"
+                                            rows="2"><?= @$address2 ?></textarea>
+
+                                        <span class="text-danger">
+                                            <?= @$error['address2'] ?>
+                                        </span>
+
+                                    </div>
+
+                                    <!-- Area -->
+                                    <div class="mb-3">
+
+                                        <label for="area" class="form-label">
+                                            Select Area
+                                        </label>
+
+                                        <select name="area"
+                                            id="area"
+                                            class="form-select">
+
+                                            <option value="">--select--</option>
+
+                                            <option value="Indurupathwila"
+                                                <?= isset($area) && $area == 'Indurupathwila' ? 'selected' : '' ?>>
+                                                Indurupathwila
+                                            </option>
+
+                                            <option value="Ihala Lelwala"
+                                                <?= isset($area) && $area == 'Ihala Lelwala' ? 'selected' : '' ?>>
+                                                Ihala Lelwala
+                                            </option>
+
+                                            <option value="Pahala Lelwala"
+                                                <?= isset($area) && $area == 'Pahala Lelwala' ? 'selected' : '' ?>>
+                                                Pahala Lelwala
+                                            </option>
+
+                                            <option value="Panvila"
+                                                <?= isset($area) && $area == 'Panvila' ? 'selected' : '' ?>>
+                                                Panvila
+                                            </option>
+
+                                            <option value="Kumbalamalahena"
+                                                <?= isset($area) && $area == 'Kumbalamalahena' ? 'selected' : '' ?>>
+                                                Kumbalamalahena
+                                            </option>
+
+                                            <option value="Weihena"
+                                                <?= isset($area) && $area == 'Weihena' ? 'selected' : '' ?>>
+                                                Weihena
+                                            </option>
+
+                                        </select>
+
+                                        <span class="text-danger">
+                                            <?= @$error['area'] ?>
+                                        </span>
+
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div class="mb-3">
+
+                                        <label for="email" class="form-label">
+                                            E-mail
+                                        </label>
+
+                                        <input type="email"
+                                            name="email"
+                                            id="email"
+                                            class="form-control"
+                                            value="<?= @$email ?>">
+
+                                        <span class="text-danger">
+                                            <?= @$error['email'] ?>
+                                        </span>
+
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+
+                                                <label for="password" class="form-label">
+                                                    Password
+                                                </label>
+
+                                                <input type="password"
+                                                    name="password"
+                                                    id="password"
+                                                    class="form-control">
+
+                                                <span class="text-danger">
+                                                    <?= @$error['password'] ?>
+                                                </span>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+
+                                                <label for="confirm_password" class="form-label">
+                                                    Confirm Password
+                                                </label>
+
+                                                <input type="password"
+                                                    name="confirm_password"
+                                                    id="confirm_password"
+                                                    class="form-control">
+
+                                                <span class="text-danger">
+                                                    <?= @$error['confirm_password'] ?>
+                                                </span>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+
+
+                                    <!-- NIC -->
+                                    <div class="mb-3">
+
+                                        <label for="nic" class="form-label">
+                                            NIC
+                                        </label>
+
+                                        <input type="text"
+                                            name="nic"
+                                            id="nic"
+                                            class="form-control"
+                                            value="<?= @$nic ?>">
+
+                                        <span class="text-danger">
+                                            <?= @$error['nic'] ?>
+                                        </span>
+
+                                    </div>
+
+                                    <!-- Mobile -->
+                                    <div class="mb-3">
+
+                                        <label for="mobile" class="form-label">
+                                            Mobile Number
+                                        </label>
+
+                                        <input type="text"
+                                            name="mobile"
+                                            id="mobile"
+                                            class="form-control"
+                                            value="<?= @$mobile ?>">
+
+                                        <span class="text-danger">
+                                            <?= @$error['mobile'] ?>
+                                        </span>
+
+                                    </div>
+                                     <!-- Bank -->
+                                    <div class="mb-3">
+
+                                        <label for="bank" class="form-label">
+                                            Select Bank
+                                        </label>
+
+                                        <select name="bank"
+                                            id="bank"
+                                            class="form-select">
+
+                                            <option value="">--select--</option>
+
+                                            <option value="boc"
+                                                <?= isset($bank) && $bank == 'boc' ? 'selected' : '' ?>>
+                                                Bank of Ceylon (BOC)
+                                            </option>
+
+                                            <option value="commercial"
+                                                <?= isset($bank) && $bank == 'commercial' ? 'selected' : '' ?>>
+                                                Commercial Bank of Ceylon
+                                            </option>
+
+                                            <option value="sampath"
+                                                <?= isset($bank) && $bank == 'sampath' ? 'selected' : '' ?>>
+                                                Sampath Bank
+                                            </option>
+
+                                            <option value="hnb"
+                                                <?= isset($bank) && $bank == 'hnb' ? 'selected' : '' ?>>
+                                                Hatton National Bank (HNB)
+                                            </option>
+
+                                            <option value="people"
+                                                <?= isset($bank) && $bank == 'people' ? 'selected' : '' ?>>
+                                                People's Bank
+                                            </option>
+
+                                            <option value="nsb"
+                                                <?= isset($bank) && $bank == 'nsb' ? 'selected' : '' ?>>
+                                                National Savings Bank (NSB)
+                                            </option>
+
+                                        </select>
+
+                                        <span class="text-danger">
+                                            <?= @$error['bank'] ?>
+                                        </span>
+
+                                    </div>
+
+                                     <!-- Bank branch -->
+                                    <div class="mb-3">
+
+                                        <label for="branch" class="form-label">
+                                            Bank Branch
+                                        </label>
+
+                                        <input type="text"
+                                            name="branch"
+                                            id="branch"
+                                            class="form-control"
+                                            value="<?= @$number ?>">
+
+                                        <span class="text-danger">
+                                            <?= @$error['branch'] ?>
+                                        </span>
+
+                                    </div>
+
+                                    <!-- Bank Account -->
+                                    <div class="mb-3">
+
+                                        <label for="number" class="form-label">
+                                            Bank Account Number
+                                        </label>
+
+                                        <input type="number"
+                                            name="number"
+                                            id="number"
+                                            class="form-control"
+                                            value="<?= @$number ?>">
+
+                                        <span class="text-danger">
+                                            <?= @$error['number'] ?>
+                                        </span>
+
+                                    </div>
+
                                    
-                                </div>
 
-                                <!-- Card Body -->
-                                <div class="card-body p-4">
+                                    <!-- Bank Book -->
+                                    <div class="mb-3">
 
-                                    <form method="post" enctype="multipart/form-data" novalidate>
+                                        <label for="book" class="form-label">
+                                            Bank Book Photo
+                                        </label>
 
-                                        <div class="row">
+                                        <input type="file"
+                                            name="book"
+                                            id="book"
+                                            class="form-control">
 
-                                            <!-- Title -->
-                                            <div class="col-md-3">
-                                                <div class="mb-3">
+                                        <span class="text-danger">
+                                            <?= @$error['book'] ?>
+                                        </span>
 
-                                                    <label for="title" class="form-label">
-                                                        Select Title
-                                                    </label>
+                                    </div>
 
-                                                    <select name="title"
-                                                        id="title"
-                                                        class="form-select">
+                                    <!-- ID Front -->
+                                    <div class="mb-4">
 
-                                                        <option value="">--select--</option>
+                                        <label for="picture" class="form-label">
+                                            ID Front View
+                                        </label>
 
-                                                        <option value="mr"
-                                                            <?= isset($title) && $title == 'mr' ? 'selected' : '' ?>>
-                                                            Mr
-                                                        </option>
+                                        <input type="file"
+                                            name="picture"
+                                            id="picture"
+                                            class="form-control">
 
-                                                        <option value="ms"
-                                                            <?= isset($title) && $title == 'ms' ? 'selected' : '' ?>>
-                                                            Ms
-                                                        </option>
+                                        <span class="text-danger">
+                                            <?= @$error['picture'] ?>
+                                        </span>
 
-                                                        <option value="mrs"
-                                                            <?= isset($title) && $title == 'mrs' ? 'selected' : '' ?>>
-                                                            Mrs
-                                                        </option>
+                                    </div>
 
-                                                    </select>
+                                    <!-- Submit Button -->
+                                    <div class="text-center">
 
-                                                    <span class="text-danger">
-                                                        <?= @$error['title'] ?>
-                                                    </span>
+                                        <button type="submit"
+                                            class="btn btn-success px-5 py-2 rounded-pill shadow-sm">
 
-                                                </div>
-                                            </div>
+                                            Submit
 
-                                            <!-- First Name -->
-                                            <div class="col-md-9">
-                                                <div class="mb-3">
+                                        </button>
 
-                                                    <label for="first_name" class="form-label">
-                                                        First Name
-                                                    </label>
+                                    </div>
 
-                                                    <input type="text"
-                                                        class="form-control"
-                                                        name="first_name"
-                                                        id="first_name"
-                                                        value="<?= @$first_name ?>">
-
-                                                    <span class="text-danger">
-                                                        <?= @$error['first_name'] ?>
-                                                    </span>
-
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        <!-- Last Name -->
-                                        <div class="mb-3">
-
-                                            <label for="last_name" class="form-label">
-                                                Last Name
-                                            </label>
-
-                                            <input type="text"
-                                                name="last_name"
-                                                id="last_name"
-                                                class="form-control"
-                                                value="<?= @$last_name ?>">
-
-                                            <span class="text-danger">
-                                                <?= @$error['last_name'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- Address 1 -->
-                                        <div class="mb-3">
-
-                                            <label for="address1" class="form-label">
-                                                Address Line 1
-                                            </label>
-
-                                            <textarea name="address1"
-                                                id="address1"
-                                                class="form-control"
-                                                rows="2"><?= @$address1 ?></textarea>
-
-                                            <span class="text-danger">
-                                                <?= @$error['address1'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- Address 2 -->
-                                        <div class="mb-3">
-
-                                            <label for="address2" class="form-label">
-                                                Address Line 2
-                                            </label>
-
-                                            <textarea name="address2"
-                                                id="address2"
-                                                class="form-control"
-                                                rows="2"><?= @$address2 ?></textarea>
-
-                                            <span class="text-danger">
-                                                <?= @$error['address2'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- Area -->
-                                        <div class="mb-3">
-
-                                            <label for="area" class="form-label">
-                                                Select Area
-                                            </label>
-
-                                            <select name="area"
-                                                id="area"
-                                                class="form-select">
-
-                                                <option value="">--select--</option>
-
-                                                <option value="Indurupathwila"
-                                                    <?= isset($area) && $area == 'Indurupathwila' ? 'selected' : '' ?>>
-                                                    Indurupathwila
-                                                </option>
-
-                                                <option value="Ihala Lelwala"
-                                                    <?= isset($area) && $area == 'Ihala Lelwala' ? 'selected' : '' ?>>
-                                                    Ihala Lelwala
-                                                </option>
-
-                                                <option value="Pahala Lelwala"
-                                                    <?= isset($area) && $area == 'Pahala Lelwala' ? 'selected' : '' ?>>
-                                                    Pahala Lelwala
-                                                </option>
-
-                                                <option value="Panvila"
-                                                    <?= isset($area) && $area == 'Panvila' ? 'selected' : '' ?>>
-                                                    Panvila
-                                                </option>
-
-                                                <option value="Kumbalamalahena"
-                                                    <?= isset($area) && $area == 'Kumbalamalahena' ? 'selected' : '' ?>>
-                                                    Kumbalamalahena
-                                                </option>
-
-                                                <option value="Weihena"
-                                                    <?= isset($area) && $area == 'Weihena' ? 'selected' : '' ?>>
-                                                    Weihena
-                                                </option>
-
-                                            </select>
-
-                                            <span class="text-danger">
-                                                <?= @$error['area'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- Email -->
-                                        <div class="mb-3">
-
-                                            <label for="email" class="form-label">
-                                                E-mail
-                                            </label>
-
-                                            <input type="email"
-                                                name="email"
-                                                id="email"
-                                                class="form-control"
-                                                value="<?= @$email ?>">
-
-                                            <span class="text-danger">
-                                                <?= @$error['email'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- NIC -->
-                                        <div class="mb-3">
-
-                                            <label for="nic" class="form-label">
-                                                NIC
-                                            </label>
-
-                                            <input type="text"
-                                                name="nic"
-                                                id="nic"
-                                                class="form-control"
-                                                value="<?= @$nic ?>">
-
-                                            <span class="text-danger">
-                                                <?= @$error['nic'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- Mobile -->
-                                        <div class="mb-3">
-
-                                            <label for="mobile" class="form-label">
-                                                Mobile Number
-                                            </label>
-
-                                            <input type="text"
-                                                name="mobile"
-                                                id="mobile"
-                                                class="form-control"
-                                                value="<?= @$mobile ?>">
-
-                                            <span class="text-danger">
-                                                <?= @$error['mobile'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- Bank Account -->
-                                        <div class="mb-3">
-
-                                            <label for="number" class="form-label">
-                                                Bank Account Number
-                                            </label>
-
-                                            <input type="number"
-                                                name="number"
-                                                id="number"
-                                                class="form-control"
-                                                value="<?= @$number ?>">
-
-                                            <span class="text-danger">
-                                                <?= @$error['number'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- Bank -->
-                                        <div class="mb-3">
-
-                                            <label for="bank" class="form-label">
-                                                Select Bank
-                                            </label>
-
-                                            <select name="bank"
-                                                id="bank"
-                                                class="form-select">
-
-                                                <option value="">--select--</option>
-
-                                                <option value="boc"
-                                                    <?= isset($bank) && $bank == 'boc' ? 'selected' : '' ?>>
-                                                    Bank of Ceylon (BOC)
-                                                </option>
-
-                                                <option value="commercial"
-                                                    <?= isset($bank) && $bank == 'commercial' ? 'selected' : '' ?>>
-                                                    Commercial Bank of Ceylon
-                                                </option>
-
-                                                <option value="sampath"
-                                                    <?= isset($bank) && $bank == 'sampath' ? 'selected' : '' ?>>
-                                                    Sampath Bank
-                                                </option>
-
-                                                <option value="hnb"
-                                                    <?= isset($bank) && $bank == 'hnb' ? 'selected' : '' ?>>
-                                                    Hatton National Bank (HNB)
-                                                </option>
-
-                                                <option value="people"
-                                                    <?= isset($bank) && $bank == 'people' ? 'selected' : '' ?>>
-                                                    People's Bank
-                                                </option>
-
-                                                <option value="nsb"
-                                                    <?= isset($bank) && $bank == 'nsb' ? 'selected' : '' ?>>
-                                                    National Savings Bank (NSB)
-                                                </option>
-
-                                            </select>
-
-                                            <span class="text-danger">
-                                                <?= @$error['bank'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- Bank Book -->
-                                        <div class="mb-3">
-
-                                            <label for="book" class="form-label">
-                                                Bank Book Photo
-                                            </label>
-
-                                            <input type="file"
-                                                name="book"
-                                                id="book"
-                                                class="form-control">
-
-                                            <span class="text-danger">
-                                                <?= @$error['book'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- ID Front -->
-                                        <div class="mb-4">
-
-                                            <label for="picture" class="form-label">
-                                                ID Front View
-                                            </label>
-
-                                            <input type="file"
-                                                name="picture"
-                                                id="picture"
-                                                class="form-control">
-
-                                            <span class="text-danger">
-                                                <?= @$error['picture'] ?>
-                                            </span>
-
-                                        </div>
-
-                                        <!-- Submit Button -->
-                                        <div class="text-center">
-
-                                            <button type="submit"
-                                                class="btn btn-success px-5 py-2 rounded-pill shadow-sm">
-
-                                                Submit
-
-                                            </button>
-
-                                        </div>
-
-                                    </form>
-
-                                </div>
+                                </form>
 
                             </div>
 
                         </div>
 
                     </div>
-                
+
+                </div>
+
 
             </div>
         </div>

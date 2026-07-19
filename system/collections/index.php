@@ -6,7 +6,7 @@ $conn = dbConnect();
 /* -----------------------------
    LOAD SUPPLIERS FOR FILTER
 ------------------------------*/
-$sql = "SELECT id, title, first_name, last_name 
+$sql = "SELECT id, title, first_name, last_name,register_no
         FROM suppliers 
         ORDER BY first_name ASC";
 
@@ -18,8 +18,8 @@ $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 /* -----------------------------
    GET FILTER VALUES
 ------------------------------*/
-$from_date  = $_GET['from_date'] ?? '';
-$to_date    = $_GET['to_date'] ?? '';
+$from_date = $_GET['from_date'] ?? '';
+$to_date = $_GET['to_date'] ?? '';
 $supplier_id = $_GET['supplier_id'] ?? '';
 
 
@@ -29,7 +29,8 @@ $supplier_id = $_GET['supplier_id'] ?? '';
 $sql = "SELECT tc.*, 
                s.title,
                s.first_name,
-               s.last_name
+               s.last_name,
+               s.register_no
         FROM tea_collection tc
         INNER JOIN suppliers s 
         ON tc.supplier_id = s.id
@@ -97,18 +98,12 @@ $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <div class="col-md-3">
                             <label>From Date</label>
-                            <input type="date"
-                                   name="from_date"
-                                   class="form-control"
-                                   value="<?= $from_date ?>">
+                            <input type="date" name="from_date" class="form-control" value="<?= $from_date ?>">
                         </div>
 
                         <div class="col-md-3">
                             <label>To Date</label>
-                            <input type="date"
-                                   name="to_date"
-                                   class="form-control"
-                                   value="<?= $to_date ?>">
+                            <input type="date" name="to_date" class="form-control" value="<?= $to_date ?>">
                         </div>
 
                         <div class="col-md-3">
@@ -119,12 +114,12 @@ $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                                 <?php foreach ($suppliers as $supplier): ?>
 
-                                    <option value="<?= $supplier['id'] ?>"
-                                        <?= ($supplier_id == $supplier['id']) ? 'selected' : '' ?>>
+                                    <option value="<?= $supplier['id'] ?>" <?= ($supplier_id == $supplier['id']) ? 'selected' : '' ?>>
 
                                         <?= ucfirst($supplier['title']) ?>.
                                         <?= $supplier['first_name'] ?>
                                         <?= $supplier['last_name'] ?>
+                                        <?= $supplier['register_no'] ?>
 
                                     </option>
 
@@ -190,7 +185,7 @@ $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 $row['total_bag_weight'] +
                                 $row['total_box_weight'];
 
-                        ?>
+                            ?>
 
                             <tr>
 
@@ -200,6 +195,7 @@ $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <?= ucfirst($row['title']) ?>.
                                     <?= $row['first_name'] ?>
                                     <?= $row['last_name'] ?>
+                                    (<?= $row['register_no'] ?>)
                                 </td>
 
                                 <td><?= $row['collection_date'] ?></td>
@@ -231,15 +227,15 @@ $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </tr>
 
                         <?php endforeach; ?>
-<tr>
-    <td colspan="3">Total</td>
-    <td><?= number_format($gtotal_gross) ?>Kg</td>
-    <td><?= number_format($gtotal_deduction) ?>Kg</td>
-    <td><?= number_format($gtotal_net) ?>Kg</td>
-    <td></td>
-    <td>Rs. <?= number_format($gtotal_amount) ?></td>
+                        <tr>
+                            <td colspan="3">Total</td>
+                            <td><?= number_format($gtotal_gross) ?>Kg</td>
+                            <td><?= number_format($gtotal_deduction) ?>Kg</td>
+                            <td><?= number_format($gtotal_net) ?>Kg</td>
+                            <td></td>
+                            <td>Rs. <?= number_format($gtotal_amount) ?></td>
 
-</tr>
+                        </tr>
                     </tbody>
 
                 </table>

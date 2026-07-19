@@ -111,11 +111,11 @@ $total_box_weight = 0;
     <!-- Supplier -->
     <select name="supplier_id" class="form-control mb-2">
         <option value="">Select Supplier</option>
-        <?php foreach ($suppliers as $s): ?>
+        <?php foreach ($suppliers as $s){ ?>
             <option value="<?= $s['id'] ?>">
                 <?= ucfirst($s['title']) ?>. <?= $s['first_name'] ?> <?= $s['last_name'] ?>
             </option>
-        <?php endforeach; ?>
+        <?php } ?>
     </select>
     <span style="color:red;">
         <?= $error['supplier_id'] ?? '' ?>
